@@ -5,7 +5,7 @@ const User = require('../../models/User.js');
 const { check, validationResult } = require('express-validator');
 const auth = require('../../middleware/auth.js');
 const { route } = require('./auth.js');
-
+const Post = require('../../models/Post')
 const request = require('request');
 
 const config=require('config');
@@ -161,6 +161,9 @@ router.get('/user/:user_id', async (req, res) => {
 router.delete('/', auth, async (req, res) => {
     try {
         //@ todo - remove users posts
+
+        await Post.deleteMany({user: req.user.id});
+
         // Remove profile
         await Profile.findOneAndRemove({ user: req.user.id });
 
@@ -229,7 +232,7 @@ router.put('/experience', [auth, [
     }
 
 });
-//@route    DELETE api/profile/experience
+//@route    DELETE api/profile/experience/:exp_id
 //@desc     Delete an experience
 //@access   Private
 
