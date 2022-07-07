@@ -75,11 +75,12 @@ router.post('/', [auth, [
     //   if(website) profileFields.website = website;
 
     if (skills) {
+        // console.log(skills);
         profileFields.skills = skills.split(',').map(skill => skill.trim());
 
     }
 
-    // Nuild social object
+    // Build social object
 
     profileFields.social = {}
     if (youtube) profileFields.social.youtube = youtube;
