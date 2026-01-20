@@ -1,0 +1,44 @@
+name: Deploy Backend (CI)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy-backend:
+    runs-on: [self-hosted, linux, x64]
+
+    env:
+      APP_NAME: devconnector-backend
+      APP_PORT: 3000
+      APP_URL: http://localhost:3000
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build backend image
+        run: |
+          docker build -t $APP_NAME:ci .
+
+      - name: Stop existing container
+        run: |
+          docker rm -f $APP_NAME || true
+
+      - name: Run backend container
+        run: |
+          docker run -d 
+            # --name $APP_NAME \
+            # -p $APP_PORT:$APP_PORT \
+            # -e NODE_ENV=ci \
+            # -e PORT=$APP_PORT \
+            # -e MONGO_URI=${{ secrets.MONGO_URI }} \
+            # -e JWT_SECRET=dummy_ci_secret \
+            # $APP_NAME:ci
+
+      - name: Wait for backend
+        run: |
+          for i in {1..10}; do
+            curl -sf $APP_URL || exit 0
+            sleep 3
+          done
+          exit 1
